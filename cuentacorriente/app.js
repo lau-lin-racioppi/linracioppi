@@ -224,8 +224,13 @@ function montoEnFormatoReciboUSD(monto) {
 }
 
 function nextReciboNum2(st) {
-  st.recibo_seq = (st.recibo_seq || 0) + 1;
-  return String(st.recibo_seq).padStart(2, "0");
+  // Busca el primer número correlativo disponible (rellena huecos por recibos eliminados)
+  const usados = new Set((st.recibos || []).map(r => Number(r.numero)));
+  let n = 1;
+  while (usados.has(n)) n++;
+  // Mantiene recibo_seq sincronizado con el máximo emitido hasta ahora
+  st.recibo_seq = Math.max(st.recibo_seq || 0, n);
+  return String(n).padStart(2, "0");
 }
 
 /* =========================
